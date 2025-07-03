@@ -17,7 +17,7 @@
             <input type="file" id="fileInput" accept="image/*" multiple>
             <label for="fileInput" class="file-btn">选择图片文件</label>
         </div>
-        
+
         <div class="image-list" id="imageList">
             <!-- 图片缩略图列表 -->
             <div class="empty-state" id="emptyState">
@@ -26,7 +26,7 @@
                 <p>点击上方按钮选择图片开始预览</p>
             </div>
         </div>
-        
+
         <div class="viewer" id="viewer" style="display: none;">
             <div class="viewer-header">
                 <div class="controls">
@@ -44,14 +44,14 @@
                     <span id="imageName">图片名称</span>
                 </div>
             </div>
-            
+
             <div class="viewer-content">
                 <button class="nav-btn prev" id="prevBtn" title="上一张 (←)">‹</button>
                 <div class="image-container">
                     <img id="viewerImage" src="" alt="预览图片">
                 </div>
                 <button class="nav-btn next" id="nextBtn" title="下一张 (→)">›</button>
-                
+
                 <!-- 图像编辑面板 -->
                 <div class="edit-panel" id="editPanel" style="display: none;">
                     <div class="edit-header">
@@ -99,7 +99,17 @@
             </div>
         </div>
     </div>
-    
-    <script src="script.js"></script>
+
+    <!-- 替换原来的脚本引用 -->
+    <script src="themes.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/imageManager.js"></script>
+    <script src="js/viewer.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/dragUpload.js"></script>
+    <script src="js/eventHandler.js"></script>
+    <script src="js/core.js"></script>
+    </body>
+    </html>
 </body>
 </html>

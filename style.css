@@ -84,16 +84,16 @@ body::before {
     display: inline-block;
     padding: 0.2em 0.5em;
     text-transform: uppercase;
-    
+
     /* 3D文字效果 */
     text-shadow: 3px 3px 0 var(--primary-color),
                  6px 6px 0 rgba(0, 0, 0, 0.1);
-                 
+
     /* 动态边框 */
     border: 2px solid transparent;
     border-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color)) 1;
     border-radius: 8px;
-    
+
     /* 动画效果 */
     animation: titleGlow 3s ease-in-out infinite alternate;
 }
@@ -927,7 +927,7 @@ body.drag-over {
         border-left: none;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .slider-control {
         grid-template-columns: 60px 1fr 40px 40px;
     }
