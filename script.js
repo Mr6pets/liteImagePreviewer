@@ -10,6 +10,16 @@ class ImagePreviewer {
         this.translateX = 0;
         this.translateY = 0;
 
+        // 图像编辑相关属性
+        this.editMode = false;
+        this.imageFilters = {
+            brightness: 100,
+            contrast: 100,
+            saturation: 100,
+            filter: 'none'
+        };
+        this.originalImageData = null;
+
         this.initElements();
         this.bindEvents();
         this.showEmptyState();
@@ -34,6 +44,18 @@ class ImagePreviewer {
         this.closeBtn = document.getElementById('closeViewer');
         this.prevBtn = document.getElementById('prevBtn');
         this.nextBtn = document.getElementById('nextBtn');
+        
+        // 图像编辑相关元素
+        this.editBtn = document.getElementById('editImage');
+        this.editPanel = document.getElementById('editPanel');
+        this.closeEditBtn = document.getElementById('closeEditPanel');
+        this.brightnessSlider = document.getElementById('brightness');
+        this.contrastSlider = document.getElementById('contrast');
+        this.saturationSlider = document.getElementById('saturation');
+        this.applyChangesBtn = document.getElementById('applyChanges');
+        this.cancelChangesBtn = document.getElementById('cancelChanges');
+        this.filterBtns = document.querySelectorAll('.filter-btn');
+        this.resetBtns = document.querySelectorAll('.reset-btn');
     }
 
     bindEvents() {
@@ -74,6 +96,40 @@ class ImagePreviewer {
 
         // 添加清空所有图片的功能
         this.addClearAllButton();
+        
+        // 图像编辑相关事件
+        this.editBtn.addEventListener('click', () => this.toggleEditPanel());
+        this.closeEditBtn.addEventListener('click', () => this.toggleEditPanel(false));
+        
+        // 滑块事件
+        this.brightnessSlider.addEventListener('input', (e) => this.updateFilter('brightness', e.target.value));
+        this.contrastSlider.addEventListener('input', (e) => this.updateFilter('contrast', e.target.value));
+        this.saturationSlider.addEventListener('input', (e) => this.updateFilter('saturation', e.target.value));
+        
+        // 滤镜按钮事件
+        this.filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+                this.updateFilter('filter', filter);
+                
+                // 更新活动状态
+                this.filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        
+        // 重置按钮事件
+        this.resetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const slider = btn.dataset.slider;
+                document.getElementById(slider).value = 100;
+                this.updateFilter(slider, 100);
+            });
+        });
+        
+        // 应用/取消按钮事件
+        this.applyChangesBtn.addEventListener('click', () => this.applyImageChanges());
+        this.cancelChangesBtn.addEventListener('click', () => this.cancelImageChanges());
     }
 
     // 显示空状态
@@ -174,7 +230,8 @@ class ImagePreviewer {
                         index: this.images.length, // 使用当前数组长度作为索引
                         size: file.size,
                         type: file.type,
-                        lastModified: file.lastModified
+                        lastModified: file.lastModified,
+                        filters: { ...this.imageFilters } // 每张图片独立的滤镜设置
                     };
 
                     this.images.push(imageData);
@@ -302,7 +359,11 @@ class ImagePreviewer {
         this.prevBtn.disabled = this.currentIndex === 0;
         this.nextBtn.disabled = this.currentIndex === this.images.length - 1;
 
+        // 应用变换
         this.applyTransform();
+        
+        // 应用滤镜
+        this.applyFilters();
     }
 
     prevImage() {
@@ -395,39 +456,47 @@ class ImagePreviewer {
 
     handleKeydown(e) {
         // 只在预览器打开时处理键盘事件
-        if (!this.viewer.classList.contains('active')) return;
+        if (this.viewer.style.display !== 'flex') return;
 
         switch (e.key) {
             case 'Escape':
-                this.closeViewer();
+                if (this.editMode) {
+                    this.cancelImageChanges();
+                } else {
+                    this.closeViewer();
+                }
                 break;
             case 'ArrowLeft':
-                this.prevImage();
+                if (!this.editMode) this.prevImage();
                 break;
             case 'ArrowRight':
-                this.nextImage();
+                if (!this.editMode) this.nextImage();
                 break;
             case '+':
             case '=':
-                this.zoomIn();
+                if (!this.editMode) this.zoomIn();
                 break;
             case '-':
-                this.zoomOut();
+                if (!this.editMode) this.zoomOut();
                 break;
             case 'r':
             case 'R':
-                this.rotateRight();
+                if (!this.editMode) this.rotateRight();
                 break;
             case 'f':
             case 'F':
-                this.toggleFullscreen();
+                if (!this.editMode) this.toggleFullscreen();
                 break;
             case '0':
-                this.resetTransform();
+                if (!this.editMode) this.resetTransform();
+                break;
+            case 'e':
+            case 'E':
+                this.toggleEditPanel(!this.editMode);
                 break;
             case 'Delete':
             case 'Backspace':
-                if (this.images.length > 0) {
+                if (!this.editMode && this.images.length > 0) {
                     this.removeImage(this.currentIndex);
                 }
                 break;
@@ -678,7 +747,8 @@ class ImagePreviewer {
                         index: this.images.length,
                         size: file.size,
                         type: file.type,
-                        lastModified: file.lastModified
+                        lastModified: file.lastModified,
+                        filters: { ...this.imageFilters } // 添加默认滤镜设置
                     };
 
                     this.images.push(imageData);
@@ -687,6 +757,111 @@ class ImagePreviewer {
                 reader.readAsDataURL(file);
             }
         });
+    }
+
+    // 切换编辑面板显示
+    toggleEditPanel(show = true) {
+        this.editMode = show;
+        this.editPanel.style.display = show ? 'block' : 'none';
+        
+        if (show) {
+            // 保存当前图片的原始滤镜设置
+            this.saveOriginalImageData();
+            
+            // 更新滑块值为当前图片的滤镜设置
+            const currentImage = this.images[this.currentIndex];
+            if (currentImage.filters) {
+                this.imageFilters = { ...currentImage.filters };
+                this.brightnessSlider.value = currentImage.filters.brightness;
+                this.contrastSlider.value = currentImage.filters.contrast;
+                this.saturationSlider.value = currentImage.filters.saturation;
+                
+                // 更新滤镜按钮状态
+                this.filterBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.filter === currentImage.filters.filter);
+                });
+            }
+        }
+    }
+    
+    // 保存当前图片的原始滤镜设置
+    saveOriginalImageData() {
+        const currentImage = this.images[this.currentIndex];
+        this.originalImageData = { ...currentImage.filters } || { 
+            brightness: 100, 
+            contrast: 100, 
+            saturation: 100, 
+            filter: 'none' 
+        };
+    }
+    
+    // 更新滤镜值
+    updateFilter(type, value) {
+        this.imageFilters[type] = value;
+        
+        // 更新滑块值显示
+        if (type !== 'filter') {
+            const valueDisplay = document.querySelector(`#${type}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = `${value}%`;
+            }
+        }
+        
+        // 应用滤镜
+        this.applyFilters();
+    }
+    
+    // 应用滤镜
+    applyFilters() {
+        if (!this.viewerImage) return;
+        
+        const { brightness, contrast, saturation, filter } = this.imageFilters;
+        let filterString = ``;
+        
+        // 添加基础调整
+        filterString += `brightness(${brightness}%) `;
+        filterString += `contrast(${contrast}%) `;
+        filterString += `saturate(${saturation}%) `;
+        
+        // 添加滤镜效果
+        switch (filter) {
+            case 'grayscale':
+                filterString += `grayscale(100%) `;
+                break;
+            case 'sepia':
+                filterString += `sepia(100%) `;
+                break;
+            case 'invert':
+                filterString += `invert(100%) `;
+                break;
+            case 'blur':
+                filterString += `blur(5px) `;
+                break;
+        }
+        
+        this.viewerImage.style.filter = filterString;
+    }
+    
+    // 应用图像更改
+    applyImageChanges() {
+        // 保存当前滤镜设置到图片数据
+        const currentImage = this.images[this.currentIndex];
+        currentImage.filters = { ...this.imageFilters };
+        
+        // 关闭编辑面板
+        this.toggleEditPanel(false);
+    }
+    
+    // 取消图像更改
+    cancelImageChanges() {
+        // 恢复原始滤镜设置
+        if (this.originalImageData) {
+            this.imageFilters = { ...this.originalImageData };
+            this.applyFilters();
+        }
+        
+        // 关闭编辑面板
+        this.toggleEditPanel(false);
     }
 }
 
