@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轻便版图片预览器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>轻便版图片预览器</h1>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <label for="fileInput" class="file-btn">选择图片</label>
+        </div>
+        
+        <div class="image-list" id="imageList">
+            <!-- 图片缩略图列表 -->
+        </div>
+        
+        <div class="viewer" id="viewer" style="display: none;">
+            <div class="viewer-header">
+                <div class="controls">
+                    <button id="zoomIn" title="放大">🔍+</button>
+                    <button id="zoomOut" title="缩小">🔍-</button>
+                    <button id="rotateLeft" title="逆时针旋转">↺</button>
+                    <button id="rotateRight" title="顺时针旋转">↻</button>
+                    <button id="fullscreen" title="全屏">⛶</button>
+                    <button id="reset" title="重置">⟲</button>
+                    <button id="closeViewer" title="关闭">✕</button>
+                </div>
+                <div class="image-info">
+                    <span id="imageCounter">1 / 1</span>
+                    <span id="imageName">图片名称</span>
+                </div>
+            </div>
+            
+            <div class="viewer-content">
+                <button class="nav-btn prev" id="prevBtn">‹</button>
+                <div class="image-container">
+                    <img id="viewerImage" src="" alt="预览图片">
+                </div>
+                <button class="nav-btn next" id="nextBtn">›</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
