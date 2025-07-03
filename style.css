@@ -77,14 +77,75 @@ body::before {
 
 .header h1 {
     font-size: 3.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ff9ff3 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-weight: 800;
     margin-bottom: 16px;
     letter-spacing: -0.02em;
     position: relative;
+    display: inline-block;
+    padding: 0.2em 0.5em;
+    text-transform: uppercase;
+    
+    /* 3D文字效果 */
+    text-shadow: 3px 3px 0 var(--primary-color),
+                 6px 6px 0 rgba(0, 0, 0, 0.1);
+                 
+    /* 动态边框 */
+    border: 2px solid transparent;
+    border-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color)) 1;
+    border-radius: 8px;
+    
+    /* 动画效果 */
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+/* 添加闪光动画 */
+@keyframes titleGlow {
+    0% {
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+    }
+    100% {
+        filter: drop-shadow(0 0 20px var(--primary-color));
+    }
+}
+
+/* 添加装饰元素 */
+.header h1::before,
+.header h1::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--accent-color);
+    animation: rotateBorder 4s linear infinite;
+}
+
+.header h1::before {
+    top: -15px;
+    left: -15px;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.header h1::after {
+    bottom: -15px;
+    right: -15px;
+    border-left: 0;
+    border-top: 0;
+}
+
+@keyframes rotateBorder {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 添加悬停效果 */
+.header h1:hover {
+    transform: translateY(-5px) scale(1.02);
+    transition: transform 0.3s ease;
 }
 
 .header h1::after {
@@ -638,4 +699,22 @@ body::before {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
+}
+
+/* 拖拽状态样式 */
+body.drag-over {
+    user-select: none;
+}
+
+/* 拖拽区域高亮 */
+.image-grid.drag-highlight {
+    border: 3px dashed #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 15px;
+}
+
+/* 上传反馈动画 */
+.upload-feedback {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }

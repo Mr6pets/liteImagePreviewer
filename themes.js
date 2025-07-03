@@ -193,7 +193,7 @@ class ThemeManager {
         if (!theme) return;
 
         const root = document.documentElement;
-        
+
         // 更新CSS变量
         root.style.setProperty('--primary-color', theme.colors.primary);
         root.style.setProperty('--secondary-color', theme.colors.secondary);
@@ -201,7 +201,7 @@ class ThemeManager {
         root.style.setProperty('--card-bg', theme.colors.cardBg);
         root.style.setProperty('--text-primary', theme.colors.textPrimary);
         root.style.setProperty('--text-secondary', theme.colors.textSecondary);
-        
+
         // 更新背景
         document.body.style.background = theme.colors.background;
         document.body.style.backgroundAttachment = 'fixed';
@@ -217,10 +217,10 @@ class ThemeManager {
             titleElement.style.webkitTextFillColor = 'transparent';
             titleElement.style.backgroundClip = 'text';
             titleElement.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            
+
             titleElement.style.position = 'relative';
             titleElement.style.zIndex = '2';
-            
+
             // 根据主题动态调整背景板
             let backdrop = titleElement.querySelector('.title-backdrop');
             if (!backdrop) {
@@ -228,7 +228,7 @@ class ThemeManager {
                 backdrop.className = 'title-backdrop';
                 titleElement.appendChild(backdrop);
             }
-            
+
             // 根据主题选择背景板颜色
             const backdropColors = {
                 default: 'rgba(255, 255, 255, 0.08)',
@@ -237,7 +237,7 @@ class ThemeManager {
                 sunset: 'rgba(0, 0, 0, 0.08)',
                 forest: 'rgba(0, 0, 0, 0.1)'
             };
-            
+
             backdrop.style.cssText = `
                 position: absolute;
                 top: -8px;
@@ -256,9 +256,9 @@ class ThemeManager {
         const themeToggleBtn = document.querySelector('.theme-toggle-btn');
         const themeDropdown = document.querySelector('.theme-dropdown');
         const themeOptions = document.querySelectorAll('.theme-option');
-        
+
         if (!themeToggleBtn || !themeDropdown) return;
-        
+
         // 根据主题定义样式
         const selectorStyles = {
             default: {
@@ -302,38 +302,38 @@ class ThemeManager {
                 optionHover: 'rgba(0, 0, 0, 0.05)'
             }
         };
-        
+
         const styles = selectorStyles[themeKey] || selectorStyles.default;
-        
+
         // 更新按钮样式
         themeToggleBtn.style.background = styles.btnBg;
         themeToggleBtn.style.borderColor = styles.btnBorder;
         themeToggleBtn.style.color = styles.btnColor;
-        
+
         // 更新下拉菜单样式
         themeDropdown.style.background = styles.dropdownBg;
         themeDropdown.style.borderColor = styles.dropdownBorder;
-        
+
         // 更新选项样式
         themeOptions.forEach(option => {
             option.style.color = styles.btnColor;
         });
-        
+
         // 更新CSS变量用于hover效果
         const root = document.documentElement;
         root.style.setProperty('--theme-option-hover', styles.optionHover);
     }
 
     getTitleGradient(colors, themeKey) {
-        // 为每个主题定制高对比度的标题渐变
+        // 为每个主题定制更炫酷的标题渐变
         const titleGradients = {
-            default: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 30%, #e2e8f0 100%)',
-            dark: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e0 100%)',
-            ocean: 'linear-gradient(135deg, #ffffff 0%, #fef9e7 30%, #fed7aa 100%)', // 暖色对比冷背景
-            sunset: 'linear-gradient(135deg, #ffffff 0%, #dbeafe 30%, #bfdbfe 100%)', // 冷色对比暖背景
-            forest: 'linear-gradient(135deg, #ffffff 0%, #fef3c7 30%, #fde68a 100%)' // 黄色对比绿背景
+            default: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ff9ff3 100%)',
+            dark: 'linear-gradient(135deg, #a29bfe 0%, #74b9ff 50%, #81ecec 100%)',
+            ocean: 'linear-gradient(135deg, #00cec9 0%, #0984e3 50%, #6c5ce7 100%)',
+            sunset: 'linear-gradient(135deg, #ff9f43 0%, #ee5253 50%, #6f1e51 100%)',
+            forest: 'linear-gradient(135deg, #1dd1a1 0%, #10ac84 50%, #2e86de 100%)'
         };
-
+    
         return titleGradients[themeKey] || titleGradients.default;
     }
 
