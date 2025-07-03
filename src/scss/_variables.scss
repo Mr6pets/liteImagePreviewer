@@ -1,0 +1,40 @@
+// 颜色变量
+$primary-colors: (
+  default: #667eea,
+  dark: #1a202c,
+  ocean: #0ea5e9,
+  sunset: #f97316,
+  forest: #059669
+);
+
+$secondary-colors: (
+  default: #764ba2,
+  dark: #2d3748,
+  ocean: #0284c7,
+  sunset: #ea580c,
+  forest: #047857
+);
+
+// 尺寸变量
+$border-radius: 16px;
+$border-radius-sm: 8px;
+$border-radius-lg: 24px;
+
+// 阴影变量
+$shadow-light: 0 4px 20px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+// 过渡变量
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: all 0.2s ease;
+$transition-slow: all 0.5s ease;
+
+// 断点变量
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);

@@ -78,7 +78,7 @@ body::before {
 .header h1 {
     font-size: 3.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #ff9ff3 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -287,7 +287,7 @@ body::before {
         opacity: 1;
         transform: scale(1);
     }
-    
+
     .image-overlay {
         opacity: 1;
         background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.9) 100%);
@@ -556,45 +556,45 @@ body::before {
     .container {
         padding: 20px 15px;
     }
-    
+
     .header h1 {
         font-size: 2.5rem;
     }
-    
+
     .image-list {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 16px;
     }
-    
+
     .viewer-header {
         padding: 15px 20px;
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .controls {
         justify-content: center;
     }
-    
+
     .controls button {
         padding: 10px 12px;
         font-size: 14px;
     }
-    
+
     .nav-btn {
         width: 50px;
         height: 50px;
         font-size: 20px;
     }
-    
+
     .nav-btn.prev {
         left: 15px;
     }
-    
+
     .nav-btn.next {
         right: 15px;
     }
-    
+
     .image-info {
         gap: 12px;
         font-size: 14px;
@@ -605,17 +605,17 @@ body::before {
     .header h1 {
         font-size: 2rem;
     }
-    
+
     .file-btn {
         padding: 14px 24px;
         font-size: 1rem;
     }
-    
+
     .image-list {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 12px;
     }
-    
+
     .image-item img {
         height: 150px;
     }

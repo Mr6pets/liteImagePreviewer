@@ -431,7 +431,9 @@ class ImagePreviewer {
     }
 }
 
+// 在文件末尾添加
 // 初始化应用
 document.addEventListener('DOMContentLoaded', () => {
     new ImagePreviewer();
+    new ThemeManager(); // 添加这行
 });

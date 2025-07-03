@@ -1,37 +1,27 @@
 {
   "name": "liteImagePreviewer",
-  "description": "a lite image previewer",
   "version": "1.0.0",
+  "description": "轻便版图片浏览器",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run sass:watch\" \"npm run start\"",
+    "sass:watch": "sass --watch src/scss:public/css",
+    "sass:build": "sass src/scss:public/css --style compressed",
+    "build": "npm run sass:build"
   },
-  "keywords": [
-    "image",
-    "previewer",
-    "viewer",
-    "gallery",
-    "web",
-    "javascript"
-  ],
   "dependencies": {
     "express": "^4.18.2",
     "multer": "^1.4.5-lts.1"
   },
+  "devDependencies": {
+    "sass": "^1.69.5",
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["image", "previewer", "viewer", "gallery", "web"],
+  "author": "Mr6pets",
+  "license": "MIT",
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:Mr6pets/liteImagePreviewer.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Mr6pets/liteImagePreviewer/issues"
-  },
-  "homepage": "https://github.com/Mr6pets/liteImagePreviewer#readme",
-  "author": "Mr6pets <alvispets@gmail.com>",
-  "license": "MIT"
+    "node": ">=14.0.0"
+  }
 }
