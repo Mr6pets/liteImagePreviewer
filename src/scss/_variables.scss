@@ -1,18 +1,21 @@
 // 颜色变量
-$primary-colors: (
-  default: #667eea,
-  dark: #1a202c,
-  ocean: #0ea5e9,
-  sunset: #f97316,
-  forest: #059669
-);
+$primary-color: #667eea;
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$secondary-color: #f093fb;
+$secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+$success-color: #4facfe;
+$success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+$dark-bg: #1a1a2e;
+$darker-bg: #16213e;
+$card-bg: rgba(255, 255, 255, 0.95);
+$text-primary: #2d3748;
+$text-secondary: #718096;
 
+// 添加secondary-colors映射
 $secondary-colors: (
   default: #764ba2,
-  dark: #2d3748,
-  ocean: #0284c7,
-  sunset: #ea580c,
-  forest: #047857
+  light: #9d7fbc,
+  dark: #5a3b7e
 );
 
 // 尺寸变量
@@ -26,15 +29,33 @@ $shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
 $shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
 
 // 过渡变量
+// 过渡变量
 $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-$transition-fast: all 0.2s ease;
-$transition-slow: all 0.5s ease;
 
 // 断点变量
 $breakpoints: (
-  sm: 576px,
+  sm: 480px,
   md: 768px,
   lg: 992px,
-  xl: 1200px,
-  xxl: 1400px
+  xl: 1200px
 );
+
+// 导出为CSS变量供JS访问
+:root {
+  --primary-color: #{$primary-color};
+  --primary-gradient: #{$primary-gradient};
+  --secondary-color: #{$secondary-color};
+  --secondary-gradient: #{$secondary-gradient};
+  --success-color: #{$success-color};
+  --success-gradient: #{$success-gradient};
+  --dark-bg: #{$dark-bg};
+  --darker-bg: #{$darker-bg};
+  --card-bg: #{$card-bg};
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --border-radius: #{$border-radius};
+  --shadow-light: #{$shadow-light};
+  --shadow-medium: #{$shadow-medium};
+  --shadow-heavy: #{$shadow-heavy};
+  --transition: #{$transition};
+}

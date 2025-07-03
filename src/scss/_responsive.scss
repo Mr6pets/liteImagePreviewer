@@ -1,0 +1,98 @@
+@use 'variables';
+@use 'sass:map';
+// 中等屏幕 (平板)
+@media (max-width: map.get(variables.$breakpoints, md)) {
+  .container {
+    padding: 20px 15px;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+  }
+
+  .image-list {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .viewer-header {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .controls {
+    justify-content: center;
+  }
+
+  .controls button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .nav-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .nav-btn.prev {
+    left: 15px;
+  }
+
+  .nav-btn.next {
+    right: 15px;
+  }
+
+  .image-info {
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .remove-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .image-overlay {
+    opacity: 1;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.9) 100%);
+  }
+
+  .edit-panel {
+    width: 100%;
+    height: 50%;
+    top: 50%;
+    right: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .slider-control {
+    grid-template-columns: 60px 1fr 40px 40px;
+  }
+}
+
+// 小屏幕 (手机)
+@media (max-width: map.get(variables.$breakpoints, sm)) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .file-btn {
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+
+  .image-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .image-item img {
+    height: 150px;
+  }
+}

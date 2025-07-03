@@ -19,6 +19,7 @@ class UIManager {
             imageCounter: document.getElementById('imageCounter'),
             imageName: document.getElementById('imageName'),
             emptyState: document.getElementById('emptyState'),
+            imageContainer: document.querySelector('.image-container'),
             // 控制按钮
             zoomInBtn: document.getElementById('zoomIn'),
             zoomOutBtn: document.getElementById('zoomOut'),
@@ -39,7 +40,21 @@ class UIManager {
             applyChangesBtn: document.getElementById('applyChanges'),
             cancelChangesBtn: document.getElementById('cancelChanges'),
             filterBtns: document.querySelectorAll('.filter-btn'),
-            resetBtns: document.querySelectorAll('.reset-btn')
+            resetBtns: document.querySelectorAll('.reset-btn'),
+            // 裁剪相关元素
+            cropOverlay: document.getElementById('cropOverlay'),
+            startCrop: document.getElementById('startCrop'),
+            applyCrop: document.getElementById('applyCrop'),
+            cancelCrop: document.getElementById('cancelCrop'),
+            // 水印相关元素
+            watermarkOverlay: document.getElementById('watermarkOverlay'),
+            watermarkInput: document.getElementById('watermarkInput'),
+            watermarkStyle: document.getElementById('watermarkStyle'),
+            watermarkColor: document.getElementById('watermarkColor'),
+            watermarkSize: document.getElementById('watermarkSize'),
+            addWatermark: document.getElementById('addWatermark'),
+            applyWatermark: document.getElementById('applyWatermark'),
+            cancelWatermark: document.getElementById('cancelWatermark')
         };
     }
     

@@ -1,10 +1,20 @@
-// 导入所有模块
-@import 'variables';
-@import 'mixins';
-// @import 'base';
-// @import 'themes';
-// @import 'components';
-// @import 'responsive';
+// 使用变量和混合器
+@use 'variables';
+@use 'mixins';
 
-// 导入Google字体
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+// 使用基础样式
+@use 'base';
+
+// 使用组件样式
+@use 'header';
+@use 'image-grid';
+@use 'viewer';
+@use 'editor';
+@use 'crop';
+@use 'watermark';
+
+// 使用动画
+@use 'animations';
+
+// 使用响应式样式
+@use 'responsive';

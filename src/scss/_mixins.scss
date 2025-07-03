@@ -1,7 +1,10 @@
+@use 'sass:map';
+@use 'variables' as vars;
+
 // 响应式混合器
 @mixin respond-to($breakpoint) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    @media (min-width: map-get($breakpoints, $breakpoint)) {
+  @if map.has-key(vars.$breakpoints, $breakpoint) {
+    @media (min-width: map.get(vars.$breakpoints, $breakpoint)) {
       @content;
     }
   }
@@ -19,8 +22,8 @@
 // 卡片样式混合器
 @mixin card-style($bg: rgba(255, 255, 255, 0.95)) {
   background: $bg;
-  border-radius: $border-radius;
-  box-shadow: $shadow-medium;
+  border-radius: vars.$border-radius;
+  box-shadow: vars.$shadow-medium;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -29,12 +32,12 @@
 @mixin button-style($bg: rgba(255, 255, 255, 0.9)) {
   @include card-style($bg);
   cursor: pointer;
-  transition: $transition;
+  transition: vars.$transition;
   font-weight: 600;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: $shadow-heavy;
+    box-shadow: vars.$shadow-heavy;
   }
   
   &:active {

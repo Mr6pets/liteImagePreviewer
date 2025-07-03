@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>轻便版图片预览器 - 现代化UI</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="public/css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="themes.js"></script>
@@ -49,6 +49,19 @@
                 <button class="nav-btn prev" id="prevBtn" title="上一张 (←)">‹</button>
                 <div class="image-container">
                     <img id="viewerImage" src="" alt="预览图片">
+                    <!-- 裁剪覆盖层 -->
+                    <div id="cropOverlay" class="crop-overlay" style="display: none;">
+                        <div class="crop-box">
+                            <div class="crop-handle top-left"></div>
+                            <div class="crop-handle top-right"></div>
+                            <div class="crop-handle bottom-left"></div>
+                            <div class="crop-handle bottom-right"></div>
+                        </div>
+                    </div>
+                    <!-- 水印覆盖层 -->
+                    <div id="watermarkOverlay" class="watermark-overlay" style="display: none;">
+                        <div id="watermarkText" class="watermark-text" contenteditable="true">水印文字</div>
+                    </div>
                 </div>
                 <button class="nav-btn next" id="nextBtn" title="下一张 (→)">›</button>
 
@@ -90,8 +103,47 @@
                                 <button class="filter-btn" data-filter="blur">模糊</button>
                             </div>
                         </div>
+                        <!-- 裁剪功能 -->
+                        <div class="edit-group">
+                            <h4>裁剪图片</h4>
+                            <div class="edit-actions">
+                                <button id="startCrop" class="secondary-btn">开始裁剪</button>
+                                <button id="applyCrop" class="primary-btn" style="display: none;">应用裁剪</button>
+                                <button id="cancelCrop" class="secondary-btn" style="display: none;">取消裁剪</button>
+                            </div>
+                        </div>
+                        <!-- 水印功能 -->
+                        <div class="edit-group">
+                            <h4>添加水印</h4>
+                            <div class="watermark-control">
+                                <input type="text" id="watermarkInput" placeholder="输入水印文字" class="text-input">
+                                <div class="watermark-style">
+                                    <label>样式:</label>
+                                    <select id="watermarkStyle" class="select-input">
+                                        <option value="normal">普通</option>
+                                        <option value="shadow">阴影</option>
+                                        <option value="outline">描边</option>
+                                        <option value="transparent">半透明</option>
+                                    </select>
+                                </div>
+                                <div class="watermark-color">
+                                    <label>颜色:</label>
+                                    <input type="color" id="watermarkColor" value="#ffffff" class="color-input">
+                                </div>
+                                <div class="watermark-size">
+                                    <label>大小:</label>
+                                    <input type="range" id="watermarkSize" min="10" max="100" value="30" class="slider">
+                                    <span class="slider-value">30px</span>
+                                </div>
+                            </div>
+                            <div class="edit-actions">
+                                <button id="addWatermark" class="secondary-btn">添加水印</button>
+                                <button id="applyWatermark" class="primary-btn" style="display: none;">应用水印</button>
+                                <button id="cancelWatermark" class="secondary-btn" style="display: none;">取消水印</button>
+                            </div>
+                        </div>
                         <div class="edit-actions">
-                            <button id="applyChanges" class="primary-btn">应用更改</button>
+                            <button id="applyChanges" class="primary-btn">应用所有更改</button>
                             <button id="cancelChanges" class="secondary-btn">取消</button>
                         </div>
                     </div>
@@ -109,7 +161,7 @@
     <script src="js/dragUpload.js"></script>
     <script src="js/eventHandler.js"></script>
     <script src="js/core.js"></script>
-    </body>
-    </html>
+</body>
+</html>
 </body>
 </html>

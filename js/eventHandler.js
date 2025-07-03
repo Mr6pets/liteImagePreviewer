@@ -72,6 +72,20 @@ class EventHandler {
         // 应用/取消按钮事件
         this.core.ui.elements.applyChangesBtn.addEventListener('click', () => this.core.editor.applyImageChanges());
         this.core.ui.elements.cancelChangesBtn.addEventListener('click', () => this.core.editor.cancelImageChanges());
+        
+        // 裁剪相关事件
+        this.core.ui.elements.startCrop.addEventListener('click', () => this.core.editor.toggleCropMode(true));
+        this.core.ui.elements.applyCrop.addEventListener('click', () => this.core.editor.applyCrop());
+        this.core.ui.elements.cancelCrop.addEventListener('click', () => this.core.editor.toggleCropMode(false));
+        
+        // 水印相关事件
+        this.core.ui.elements.addWatermark.addEventListener('click', () => this.core.editor.toggleWatermarkMode(true));
+        this.core.ui.elements.applyWatermark.addEventListener('click', () => this.core.editor.applyWatermark());
+        this.core.ui.elements.cancelWatermark.addEventListener('click', () => this.core.editor.toggleWatermarkMode(false));
+        this.core.ui.elements.watermarkInput.addEventListener('input', () => this.core.editor.updateWatermarkText());
+        this.core.ui.elements.watermarkStyle.addEventListener('change', () => this.core.editor.updateWatermarkStyle());
+        this.core.ui.elements.watermarkColor.addEventListener('input', () => this.core.editor.updateWatermarkStyle());
+        this.core.ui.elements.watermarkSize.addEventListener('input', () => this.core.editor.updateWatermarkSize());
     }
     
     handleKeydown(e) {
@@ -80,43 +94,75 @@ class EventHandler {
 
         switch (e.key) {
             case 'Escape':
-                if (this.core.editor.editMode) {
+                if (this.core.editor.cropMode) {
+                    this.core.editor.toggleCropMode(false);
+                } else if (this.core.editor.watermarkMode) {
+                    this.core.editor.toggleWatermarkMode(false);
+                } else if (this.core.editor.editMode) {
                     this.core.editor.cancelImageChanges();
                 } else {
                     this.core.viewer.closeViewer();
                 }
                 break;
             case 'ArrowLeft':
-                if (!this.core.editor.editMode) this.core.viewer.prevImage();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.prevImage();
+                }
                 break;
             case 'ArrowRight':
-                if (!this.core.editor.editMode) this.core.viewer.nextImage();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.nextImage();
+                }
                 break;
             case '+':
             case '=':
-                if (!this.core.editor.editMode) this.core.viewer.zoomIn();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.zoomIn();
+                }
                 break;
             case '-':
-                if (!this.core.editor.editMode) this.core.viewer.zoomOut();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.zoomOut();
+                }
                 break;
             case 'r':
             case 'R':
-                if (!this.core.editor.editMode) this.core.viewer.rotateRight();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.rotateRight();
+                }
                 break;
             case 'f':
             case 'F':
-                if (!this.core.editor.editMode) this.core.viewer.toggleFullscreen();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.toggleFullscreen();
+                }
                 break;
             case '0':
-                if (!this.core.editor.editMode) this.core.viewer.resetTransform();
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.viewer.resetTransform();
+                }
                 break;
             case 'e':
             case 'E':
-                this.core.editor.toggleEditPanel(!this.core.editor.editMode);
+                if (!this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.core.editor.toggleEditPanel(!this.core.editor.editMode);
+                }
+                break;
+            case 'c':
+            case 'C':
+                if (this.core.editor.editMode && !this.core.editor.watermarkMode) {
+                    this.core.editor.toggleCropMode(!this.core.editor.cropMode);
+                }
+                break;
+            case 'w':
+            case 'W':
+                if (this.core.editor.editMode && !this.core.editor.cropMode) {
+                    this.core.editor.toggleWatermarkMode(!this.core.editor.watermarkMode);
+                }
                 break;
             case 'Delete':
             case 'Backspace':
-                if (!this.core.editor.editMode && this.core.imageManager.images.length > 0) {
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode && this.core.imageManager.images.length > 0) {
                     this.core.imageManager.removeImage(this.core.imageManager.currentIndex);
                 }
                 break;

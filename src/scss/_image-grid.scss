@@ -1,0 +1,195 @@
+@use 'variables';
+
+// 图片网格
+.image-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+// 图片项
+.image-item {
+  position: relative;
+  border-radius: variables.$border-radius;
+  overflow: hidden;
+  box-shadow: variables.$shadow-light;
+  cursor: pointer;
+  transition: variables.$transition;
+  background: variables.$card-bg;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    opacity: 0;
+    transition: variables.$transition;
+    z-index: 2;
+  }
+
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: variables.$shadow-heavy;
+
+    &::before {
+      opacity: 1;
+    }
+
+    img {
+      transform: scale(1.05);
+    }
+
+    .image-overlay {
+      opacity: 1;
+    }
+
+    .remove-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: variables.$transition;
+
+    &[loading="lazy"] {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+
+      &.loaded {
+        opacity: 1;
+      }
+    }
+  }
+
+  .name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+  }
+}
+
+// 图片覆盖层
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.8) 100%);
+  opacity: 0;
+  transition: variables.$transition;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.image-info-overlay {
+  margin-top: auto;
+
+  .name {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .size {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    font-weight: 400;
+  }
+}
+
+// 删除按钮
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(229, 62, 62, 0.9);
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: variables.$transition;
+  opacity: 0;
+  transform: scale(0.8);
+
+  &:hover {
+    background: rgba(229, 62, 62, 1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+  }
+}
+
+// 空状态样式
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: rgba(255, 255, 255, 0.8);
+
+  .icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.6;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+}
+
+// 拖拽状态样式
+body.drag-over {
+  user-select: none;
+}
+
+// 拖拽区域高亮
+.image-grid.drag-highlight {
+  border: 3px dashed variables.$primary-color;
+  background: rgba(variables.$primary-color, 0.1);
+  border-radius: 15px;
+}
+
+// 上传反馈动画
+.upload-feedback {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
