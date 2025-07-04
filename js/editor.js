@@ -22,6 +22,13 @@ class ImageEditor {
         this.cropStartLeft = 0;
         this.cropStartTop = 0;
 
+        // 预先绑定事件处理函数
+        this.boundCropBoxDrag = this.cropBoxDrag.bind(this);
+        this.boundEndCropBoxDrag = this.endCropBoxDrag.bind(this);
+        this.boundStartCropResize = this.startCropResize.bind(this);
+        this.boundCropResize = this.cropResize.bind(this);
+        this.boundEndCropResize = this.endCropResize.bind(this);
+
         // 水印相关属性
         this.watermarkMode = false;
         this.watermarkText = null;
@@ -196,25 +203,24 @@ class ImageEditor {
 
     // 添加裁剪事件监听
     addCropEventListeners() {
-        // 移动裁剪框
         this.cropBox.addEventListener('mousedown', this.startCropBoxDrag.bind(this));
-        document.addEventListener('mousemove', this.cropBoxDrag.bind(this));
-        document.addEventListener('mouseup', this.endCropBoxDrag.bind(this));
+        document.addEventListener('mousemove', this.boundCropBoxDrag);
+        document.addEventListener('mouseup', this.boundEndCropBoxDrag);
 
         // 调整裁剪框大小
         this.cropHandles.forEach(handle => {
-            handle.addEventListener('mousedown', this.startCropResize.bind(this));
+            handle.addEventListener('mousedown', this.boundStartCropResize);
         });
     }
 
     // 移除裁剪事件监听
     removeCropEventListeners() {
         this.cropBox.removeEventListener('mousedown', this.startCropBoxDrag.bind(this));
-        document.removeEventListener('mousemove', this.cropBoxDrag.bind(this));
-        document.removeEventListener('mouseup', this.endCropBoxDrag.bind(this));
+        document.removeEventListener('mousemove', this.boundCropBoxDrag);
+        document.removeEventListener('mouseup', this.boundEndCropBoxDrag);
 
         this.cropHandles.forEach(handle => {
-            handle.removeEventListener('mousedown', this.startCropResize.bind(this));
+            handle.removeEventListener('mousedown', this.boundStartCropResize);
         });
     }
 
@@ -289,8 +295,8 @@ class ImageEditor {
         this.cropStartLeft = parseFloat(this.cropBox.style.left) || 0;
         this.cropStartTop = parseFloat(this.cropBox.style.top) || 0;
 
-        document.addEventListener('mousemove', this.cropResize.bind(this));
-        document.addEventListener('mouseup', this.endCropResize.bind(this));
+        document.addEventListener('mousemove', this.boundCropResize);
+        document.addEventListener('mouseup', this.boundEndCropResize);
     }
 
     // 调整裁剪框大小
@@ -361,8 +367,8 @@ class ImageEditor {
     // 结束调整裁剪框大小
     endCropResize() {
         this.activeCropHandle = null;
-        document.removeEventListener('mousemove', this.cropResize.bind(this));
-        document.removeEventListener('mouseup', this.endCropResize.bind(this));
+        document.removeEventListener('mousemove', this.boundCropResize);
+        document.removeEventListener('mouseup', this.boundEndCropResize);
     }
 
     // 应用裁剪
