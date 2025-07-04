@@ -8,6 +8,7 @@ class ImageViewer {
         this.isDragging = false;
         this.startX = 0;
         this.startY = 0;
+        this.animationId = null; // 添加动画ID
     }
     
     openViewer(index) {
@@ -107,16 +108,29 @@ class ImageViewer {
         event.preventDefault();
     }
 
-    drag(event) {
+    drag(e) {
         if (!this.isDragging) return;
 
-        this.translateX = event.clientX - this.startX;
-        this.translateY = event.clientY - this.startY;
-        this.applyTransform();
+        // 取消之前的动画帧
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        
+        // 使用 requestAnimationFrame 优化性能
+        this.animationId = requestAnimationFrame(() => {
+            this.translateX = e.clientX - this.startX;
+            this.translateY = e.clientY - this.startY;
+            this.applyTransform();
+        });
     }
-
+    
     endDrag() {
         this.isDragging = false;
+        // 清理动画帧
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
     }
 
     handleWheel(event) {
