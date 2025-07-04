@@ -8,8 +8,9 @@ class ImageViewer {
         this.isDragging = false;
         this.startX = 0;
         this.startY = 0;
+        this.animationId = null; // 添加动画ID
     }
-    
+
     openViewer(index) {
         this.core.imageManager.currentIndex = index;
         this.resetTransform();
@@ -26,17 +27,17 @@ class ImageViewer {
     updateViewer() {
         const images = this.core.imageManager.images;
         const currentIndex = this.core.imageManager.currentIndex;
-        
+
         if (images.length === 0) return;
 
         const currentImage = images[currentIndex];
-        
+
         // 更新UI
         this.core.ui.updateViewerUI(currentImage, currentIndex, images.length);
 
         // 应用变换
         this.applyTransform();
-        
+
         // 应用滤镜
         this.core.editor.applyFilters();
     }
@@ -107,19 +108,40 @@ class ImageViewer {
         event.preventDefault();
     }
 
-    drag(event) {
+    drag(e) {
         if (!this.isDragging) return;
 
-        this.translateX = event.clientX - this.startX;
-        this.translateY = event.clientY - this.startY;
-        this.applyTransform();
+        // 取消之前的动画帧
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+
+        // 使用 requestAnimationFrame 优化性能
+        this.animationId = requestAnimationFrame(() => {
+            this.translateX = e.clientX - this.startX;
+            this.translateY = e.clientY - this.startY;
+            this.applyTransform();
+        });
     }
 
     endDrag() {
         this.isDragging = false;
+        // 清理动画帧
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
     }
 
     handleWheel(event) {
+        const editPanel = this.core.ui.elements.editPanel;
+
+        // 检查鼠标是否在编辑面板上
+        if (editPanel.contains(event.target)) {
+            // 允许在编辑面板上滚动
+            return;
+        }
+
         event.preventDefault();
 
         if (event.deltaY < 0) {
