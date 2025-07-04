@@ -36,6 +36,7 @@ class ImageManager {
                 reader.onload = (e) => {
                     const imageData = {
                         src: e.target.result,
+                        originalSrc: e.target.result, // 确保这行存在
                         name: file.name,
                         index: this.images.length,
                         size: file.size,

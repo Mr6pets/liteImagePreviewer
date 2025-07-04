@@ -3213,6 +3213,10 @@ body.drag-over {
   font-size: 14px;
   width: 100%;
 }
+.select-input option {
+  background: #333;
+  color: white;
+}
 
 .watermark-style,
 .watermark-color,

@@ -457,6 +457,13 @@ class ImageEditor {
         } else {
             // 移除水印事件监听
             this.removeWatermarkEventListeners();
+
+            // 重置水印UI
+            if (this.watermarkText) {
+                this.watermarkText.style.transform = '';
+                this.watermarkText.style.left = '';
+                this.watermarkText.style.top = '';
+            }
         }
     }
 
@@ -585,89 +592,88 @@ class ImageEditor {
 
     // 应用水印
     applyWatermark() {
-        // 获取图片元素
-        const img = this.core.ui.elements.viewerImage;
-        const imgRect = img.getBoundingClientRect();
-        const containerRect = this.core.ui.elements.imageContainer.getBoundingClientRect();
-
-        // 创建Canvas
+        const currentImage = this.core.imageManager.images[this.core.imageManager.currentIndex];
+        const imgRect = this.core.ui.elements.viewerImage.getBoundingClientRect();
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
+        const baseImg = new window.Image();
 
-        // 设置Canvas尺寸为图片的实际尺寸
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
+        baseImg.onload = () => {
+            canvas.width = baseImg.naturalWidth;
+            canvas.height = baseImg.naturalHeight;
+            ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
 
-        // 在Canvas上绘制原图
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // 获取水印样式和位置
+            const watermarkStyle = window.getComputedStyle(this.watermarkText);
+            const scaleX = baseImg.naturalWidth / imgRect.width;
+            const scaleY = baseImg.naturalHeight / imgRect.height;
 
-        // 获取水印样式和位置
-        const watermarkStyle = window.getComputedStyle(this.watermarkText);
-        const watermarkRect = this.watermarkText.getBoundingClientRect();
+            let watermarkX, watermarkY;
+            if (this.watermarkText.style.transform === 'none' && this.watermarkText.style.left) {
+                const left = parseFloat(this.watermarkText.style.left);
+                const top = parseFloat(this.watermarkText.style.top);
+                watermarkX = left * scaleX;
+                watermarkY = top * scaleY;
+            } else {
+                watermarkX = canvas.width / 2;
+                watermarkY = canvas.height / 2;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+            }
 
-        // 计算缩放比例
-        const scaleX = img.naturalWidth / imgRect.width;
-        const scaleY = img.naturalHeight / imgRect.height;
+            const fontSize = parseFloat(watermarkStyle.fontSize) * Math.min(scaleX, scaleY);
+            ctx.font = `${fontSize}px ${watermarkStyle.fontFamily || 'Arial'}`;
+            ctx.fillStyle = watermarkStyle.color;
+            ctx.globalAlpha = parseFloat(watermarkStyle.opacity) || 1;
 
-        // 计算水印在Canvas上的位置
-        let watermarkX, watermarkY;
+            const style = this.core.ui.elements.watermarkStyle.value;
+            switch (style) {
+                case 'shadow':
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 4 * Math.min(scaleX, scaleY);
+                    ctx.shadowOffsetX = 2 * scaleX;
+                    ctx.shadowOffsetY = 2 * scaleY;
+                    break;
+                case 'outline':
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1 * Math.min(scaleX, scaleY);
+                    ctx.strokeText(this.watermarkText.textContent, watermarkX, watermarkY);
+                    break;
+            }
 
-        if (this.watermarkText.style.transform === 'none' && this.watermarkText.style.left) {
-            // 水印已被拖动
-            const left = parseFloat(this.watermarkText.style.left);
-            const top = parseFloat(this.watermarkText.style.top);
-            watermarkX = left * scaleX;
-            watermarkY = (top + parseFloat(watermarkStyle.fontSize)) * scaleY;
-        } else {
-            // 水印在默认位置（居中）
-            watermarkX = (canvas.width - ctx.measureText(this.watermarkText.textContent).width) / 2;
-            watermarkY = canvas.height / 2;
-        }
+            ctx.fillText(this.watermarkText.textContent, watermarkX, watermarkY);
+            const watermarkedImageData = canvas.toDataURL(currentImage.type || 'image/png');
+            currentImage.src = watermarkedImageData;
 
-        // 设置Canvas文字样式
-        const fontSize = parseFloat(watermarkStyle.fontSize) * Math.min(scaleX, scaleY);
-        ctx.font = `${fontSize}px ${watermarkStyle.fontFamily || 'Arial'}`;
-        ctx.fillStyle = watermarkStyle.color;
-        ctx.globalAlpha = parseFloat(watermarkStyle.opacity) || 1;
+            // UI 更新
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                this.core.ui.elements.viewerImage.src = tempImg.src;
+                const thumbnailImg = this.core.ui.elements.imageList.children[this.core.imageManager.currentIndex]?.querySelector('img');
+                if (thumbnailImg) {
+                    thumbnailImg.src = tempImg.src;
+                }
+                this.toggleWatermarkMode(false);
+                console.log('水印已成功应用并保存');
+            };
+            tempImg.onerror = () => {
+                console.error('加载带水印的图像失败。');
+                this.toggleWatermarkMode(false);
+            };
+            tempImg.src = watermarkedImageData;
+        };
 
-        // 应用文字效果
-        const style = this.core.ui.elements.watermarkStyle.value;
-        switch (style) {
-            case 'shadow':
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                ctx.shadowBlur = 4 * Math.min(scaleX, scaleY);
-                ctx.shadowOffsetX = 2 * scaleX;
-                ctx.shadowOffsetY = 2 * scaleY;
-                break;
-            case 'outline':
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 1 * Math.min(scaleX, scaleY);
-                ctx.strokeText(this.watermarkText.textContent, watermarkX, watermarkY);
-                break;
-        }
+        baseImg.onerror = () => {
+            console.error('无法加载原始图像，使用当前显示的图像作为基础');
+            // 回退到使用当前显示的图像
+            const img = this.core.ui.elements.viewerImage;
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            // 继续水印处理逻辑...
+        };
 
-        // 绘制水印文字
-        ctx.fillText(this.watermarkText.textContent, watermarkX, watermarkY);
-
-        // 将Canvas转换为图片数据
-        const watermarkedImageData = canvas.toDataURL(this.core.imageManager.images[this.core.imageManager.currentIndex].type || 'image/png');
-
-        // 更新当前图片
-        const currentImage = this.core.imageManager.images[this.core.imageManager.currentIndex];
-        currentImage.src = watermarkedImageData;
-
-        // 更新预览图
-        this.core.ui.elements.viewerImage.src = watermarkedImageData;
-
-        // 更新缩略图
-        const thumbnailImg = this.core.ui.elements.imageList.children[this.core.imageManager.currentIndex]?.querySelector('img');
-        if (thumbnailImg) {
-            thumbnailImg.src = watermarkedImageData;
-        }
-
-        // 退出水印模式
-        this.toggleWatermarkMode(false);
-
-        console.log('水印已成功应用并保存');
+        // 使用 originalSrc，如果不存在则回退到 src
+        baseImg.src = currentImage.originalSrc || currentImage.src;
     }
 }
