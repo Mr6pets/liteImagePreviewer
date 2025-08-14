@@ -17,6 +17,7 @@ class EventHandler {
         this.core.ui.elements.rotateRightBtn.addEventListener('click', () => this.core.viewer.rotateRight());
         this.core.ui.elements.fullscreenBtn.addEventListener('click', () => this.core.viewer.toggleFullscreen());
         this.core.ui.elements.resetBtn.addEventListener('click', () => this.core.viewer.resetTransform());
+        this.core.ui.elements.downloadBtn.addEventListener('click', () => this.downloadCurrentImage());
         this.core.ui.elements.closeBtn.addEventListener('click', () => this.core.viewer.closeViewer());
         this.core.ui.elements.prevBtn.addEventListener('click', () => this.core.viewer.prevImage());
         this.core.ui.elements.nextBtn.addEventListener('click', () => this.core.viewer.nextImage());
@@ -142,6 +143,12 @@ class EventHandler {
                     this.core.viewer.resetTransform();
                 }
                 break;
+            case 'd':
+            case 'D':
+                if (!this.core.editor.editMode && !this.core.editor.cropMode && !this.core.editor.watermarkMode) {
+                    this.downloadCurrentImage();
+                }
+                break;
             case 'e':
             case 'E':
                 if (!this.core.editor.cropMode && !this.core.editor.watermarkMode) {
@@ -167,5 +174,42 @@ class EventHandler {
                 }
                 break;
         }
+    }
+
+    // 下载当前图片
+    downloadCurrentImage() {
+        if (this.core.imageManager.images.length === 0) return;
+
+        const currentImage = this.core.imageManager.images[this.core.imageManager.currentIndex];
+        const img = this.core.ui.elements.viewerImage;
+
+        // 创建canvas来处理图片
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置canvas尺寸为图片的原始尺寸
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        // 在canvas上绘制图片（包含所有编辑效果）
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // 将canvas转换为blob并下载
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // 生成文件名
+            const originalName = currentImage.name;
+            const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.')) || originalName;
+            const ext = originalName.substring(originalName.lastIndexOf('.')) || '.png';
+            a.download = `${nameWithoutExt}_edited${ext}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, currentImage.type || 'image/png');
     }
 }

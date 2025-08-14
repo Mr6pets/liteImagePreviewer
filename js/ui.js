@@ -27,6 +27,7 @@ class UIManager {
             rotateRightBtn: document.getElementById('rotateRight'),
             fullscreenBtn: document.getElementById('fullscreen'),
             resetBtn: document.getElementById('reset'),
+            downloadBtn: document.getElementById('downloadImage'),
             closeBtn: document.getElementById('closeViewer'),
             prevBtn: document.getElementById('prevBtn'),
             nextBtn: document.getElementById('nextBtn'),

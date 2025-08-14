@@ -22,12 +22,21 @@ class ImageEditor {
         this.cropStartLeft = 0;
         this.cropStartTop = 0;
 
-        // 预先绑定事件处理函数
+        // 绑定函数引用，确保能正确移除事件监听
         this.boundCropBoxDrag = this.cropBoxDrag.bind(this);
         this.boundEndCropBoxDrag = this.endCropBoxDrag.bind(this);
+        this.boundStartCropBoxDrag = this.startCropBoxDrag.bind(this);
         this.boundStartCropResize = this.startCropResize.bind(this);
         this.boundCropResize = this.cropResize.bind(this);
         this.boundEndCropResize = this.endCropResize.bind(this);
+
+        // 绑定水印相关函数引用
+        this.boundStartWatermarkDrag = this.startWatermarkDrag.bind(this);
+        this.boundWatermarkDrag = this.watermarkDrag.bind(this);
+        this.boundEndWatermarkDrag = this.endWatermarkDrag.bind(this);
+        this.boundUpdateWatermarkText = this.updateWatermarkText.bind(this);
+        this.boundUpdateWatermarkStyle = this.updateWatermarkStyle.bind(this);
+        this.boundUpdateWatermarkSize = this.updateWatermarkSize.bind(this);
 
         // 水印相关属性
         this.watermarkMode = false;
@@ -203,7 +212,7 @@ class ImageEditor {
 
     // 添加裁剪事件监听
     addCropEventListeners() {
-        this.cropBox.addEventListener('mousedown', this.startCropBoxDrag.bind(this));
+        this.cropBox.addEventListener('mousedown', this.boundStartCropBoxDrag);
         document.addEventListener('mousemove', this.boundCropBoxDrag);
         document.addEventListener('mouseup', this.boundEndCropBoxDrag);
 
@@ -215,13 +224,17 @@ class ImageEditor {
 
     // 移除裁剪事件监听
     removeCropEventListeners() {
-        this.cropBox.removeEventListener('mousedown', this.startCropBoxDrag.bind(this));
+        if (this.cropBox) {
+            this.cropBox.removeEventListener('mousedown', this.boundStartCropBoxDrag);
+        }
         document.removeEventListener('mousemove', this.boundCropBoxDrag);
         document.removeEventListener('mouseup', this.boundEndCropBoxDrag);
 
-        this.cropHandles.forEach(handle => {
-            handle.removeEventListener('mousedown', this.boundStartCropResize);
-        });
+        if (this.cropHandles) {
+            this.cropHandles.forEach(handle => {
+                handle.removeEventListener('mousedown', this.boundStartCropResize);
+            });
+        }
     }
 
     // 开始拖动裁剪框
@@ -262,12 +275,14 @@ class ImageEditor {
             const cropWidth = parseFloat(this.cropBox.style.width);
             const cropHeight = parseFloat(this.cropBox.style.height);
 
-            // 修正边界计算 - 使用图片的实际显示尺寸
-            const maxLeft = imgRect.width - cropWidth;
-            const maxTop = imgRect.height - cropHeight;
+            // 修正边界计算 - 考虑图片在容器中的偏移
+            const minLeft = imgOffsetX;
+            const minTop = imgOffsetY;
+            const maxLeft = imgOffsetX + imgRect.width - cropWidth;
+            const maxTop = imgOffsetY + imgRect.height - cropHeight;
 
-            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-            newTop = Math.max(0, Math.min(newTop, maxTop));
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+            newTop = Math.max(minTop, Math.min(newTop, maxTop));
 
             // 更新裁剪框位置
             this.cropBox.style.left = `${newLeft}px`;
@@ -509,27 +524,29 @@ class ImageEditor {
     // 添加水印事件监听
     addWatermarkEventListeners() {
         // 水印拖动
-        this.watermarkText.addEventListener('mousedown', this.startWatermarkDrag.bind(this));
-        document.addEventListener('mousemove', this.watermarkDrag.bind(this));
-        document.addEventListener('mouseup', this.endWatermarkDrag.bind(this));
+        this.watermarkText.addEventListener('mousedown', this.boundStartWatermarkDrag);
+        document.addEventListener('mousemove', this.boundWatermarkDrag);
+        document.addEventListener('mouseup', this.boundEndWatermarkDrag);
 
         // 水印样式更新
-        this.core.ui.elements.watermarkInput.addEventListener('input', this.updateWatermarkText.bind(this));
-        this.core.ui.elements.watermarkStyle.addEventListener('change', this.updateWatermarkStyle.bind(this));
-        this.core.ui.elements.watermarkColor.addEventListener('input', this.updateWatermarkStyle.bind(this));
-        this.core.ui.elements.watermarkSize.addEventListener('input', this.updateWatermarkSize.bind(this));
+        this.core.ui.elements.watermarkInput.addEventListener('input', this.boundUpdateWatermarkText);
+        this.core.ui.elements.watermarkStyle.addEventListener('change', this.boundUpdateWatermarkStyle);
+        this.core.ui.elements.watermarkColor.addEventListener('input', this.boundUpdateWatermarkStyle);
+        this.core.ui.elements.watermarkSize.addEventListener('input', this.boundUpdateWatermarkSize);
     }
 
     // 移除水印事件监听
     removeWatermarkEventListeners() {
-        this.watermarkText.removeEventListener('mousedown', this.startWatermarkDrag.bind(this));
-        document.removeEventListener('mousemove', this.watermarkDrag.bind(this));
-        document.removeEventListener('mouseup', this.endWatermarkDrag.bind(this));
+        if (this.watermarkText) {
+            this.watermarkText.removeEventListener('mousedown', this.boundStartWatermarkDrag);
+        }
+        document.removeEventListener('mousemove', this.boundWatermarkDrag);
+        document.removeEventListener('mouseup', this.boundEndWatermarkDrag);
 
-        this.core.ui.elements.watermarkInput.removeEventListener('input', this.updateWatermarkText.bind(this));
-        this.core.ui.elements.watermarkStyle.removeEventListener('change', this.updateWatermarkStyle.bind(this));
-        this.core.ui.elements.watermarkColor.removeEventListener('input', this.updateWatermarkStyle.bind(this));
-        this.core.ui.elements.watermarkSize.removeEventListener('input', this.updateWatermarkSize.bind(this));
+        this.core.ui.elements.watermarkInput.removeEventListener('input', this.boundUpdateWatermarkText);
+        this.core.ui.elements.watermarkStyle.removeEventListener('change', this.boundUpdateWatermarkStyle);
+        this.core.ui.elements.watermarkColor.removeEventListener('input', this.boundUpdateWatermarkStyle);
+        this.core.ui.elements.watermarkSize.removeEventListener('input', this.boundUpdateWatermarkSize);
     }
 
     // 更新水印文字
@@ -670,7 +687,65 @@ class ImageEditor {
             canvas.width = img.naturalWidth;
             canvas.height = img.naturalHeight;
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            // 继续水印处理逻辑...
+            
+            // 继续水印处理逻辑
+            const watermarkStyle = window.getComputedStyle(this.watermarkText);
+            const scaleX = img.naturalWidth / imgRect.width;
+            const scaleY = img.naturalHeight / imgRect.height;
+
+            let watermarkX, watermarkY;
+            if (this.watermarkText.style.transform === 'none' && this.watermarkText.style.left) {
+                const left = parseFloat(this.watermarkText.style.left);
+                const top = parseFloat(this.watermarkText.style.top);
+                watermarkX = left * scaleX;
+                watermarkY = top * scaleY;
+            } else {
+                watermarkX = canvas.width / 2;
+                watermarkY = canvas.height / 2;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+            }
+
+            const fontSize = parseFloat(watermarkStyle.fontSize) * Math.min(scaleX, scaleY);
+            ctx.font = `${fontSize}px ${watermarkStyle.fontFamily || 'Arial'}`;
+            ctx.fillStyle = watermarkStyle.color;
+            ctx.globalAlpha = parseFloat(watermarkStyle.opacity) || 1;
+
+            const style = this.core.ui.elements.watermarkStyle.value;
+            switch (style) {
+                case 'shadow':
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 4 * Math.min(scaleX, scaleY);
+                    ctx.shadowOffsetX = 2 * scaleX;
+                    ctx.shadowOffsetY = 2 * scaleY;
+                    break;
+                case 'outline':
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1 * Math.min(scaleX, scaleY);
+                    ctx.strokeText(this.watermarkText.textContent, watermarkX, watermarkY);
+                    break;
+            }
+
+            ctx.fillText(this.watermarkText.textContent, watermarkX, watermarkY);
+            const watermarkedImageData = canvas.toDataURL(currentImage.type || 'image/png');
+            currentImage.src = watermarkedImageData;
+
+            // UI 更新
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                this.core.ui.elements.viewerImage.src = tempImg.src;
+                const thumbnailImg = this.core.ui.elements.imageList.children[this.core.imageManager.currentIndex]?.querySelector('img');
+                if (thumbnailImg) {
+                    thumbnailImg.src = tempImg.src;
+                }
+                this.toggleWatermarkMode(false);
+                console.log('水印已成功应用并保存（使用回退方案）');
+            };
+            tempImg.onerror = () => {
+                console.error('加载带水印的图像失败。');
+                this.toggleWatermarkMode(false);
+            };
+            tempImg.src = watermarkedImageData;
         };
 
         // 使用 originalSrc，如果不存在则回退到 src
