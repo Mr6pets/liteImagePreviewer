@@ -9,12 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
-    <div class="container">
+    <div class="container" role="main">
         <div class="header">
             <h1>轻便版图片预览器</h1>
             <p>现代化的图片预览体验，支持多种操作和快捷键</p>
-            <input type="file" id="fileInput" accept="image/*" multiple>
-            <label for="fileInput" class="file-btn">选择图片文件</label>
+            <input type="file" id="fileInput" accept="image/*" multiple aria-label="选择图片文件">
+            <label for="fileInput" class="file-btn" role="button" tabindex="0">选择图片文件</label>
         </div>
 
         <div class="image-list" id="imageList">
@@ -26,28 +26,28 @@
             </div>
         </div>
 
-        <div class="viewer" id="viewer" style="display: none;">
+        <div class="viewer" id="viewer" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="viewerTitle" aria-describedby="imageCounter">
             <div class="viewer-header">
-                <div class="controls">
-                    <button id="zoomIn" title="放大 (+)">🔍+</button>
-                    <button id="zoomOut" title="缩小 (-)">🔍-</button>
-                    <button id="rotateLeft" title="逆时针旋转">↺</button>
-                    <button id="rotateRight" title="顺时针旋转 (R)">↻</button>
-                    <button id="fullscreen" title="全屏 (F)">⛶</button>
-                    <button id="reset" title="重置 (0)">⟲</button>
-                    <button id="editImage" title="编辑图片 (E)">✏️</button>
-                    <button id="closeViewer" title="关闭 (ESC)">✕</button>
+                <div class="controls" role="toolbar">
+                    <button id="zoomIn" title="放大 (+)" aria-label="放大图片">🔍+</button>
+                    <button id="zoomOut" title="缩小 (-)" aria-label="缩小图片">🔍-</button>
+                    <button id="rotateLeft" title="逆时针旋转" aria-label="逆时针旋转图片">↺</button>
+                    <button id="rotateRight" title="顺时针旋转 (R)" aria-label="顺时针旋转图片">↻</button>
+                    <button id="fullscreen" title="全屏 (F)" aria-label="全屏显示">⛶</button>
+                    <button id="reset" title="重置 (0)" aria-label="重置图片">⟲</button>
+                    <button id="editImage" title="编辑图片 (E)" aria-label="编辑图片">✏️</button>
+                    <button id="closeViewer" title="关闭 (ESC)" aria-label="关闭预览">✕</button>
                 </div>
                 <div class="image-info">
-                    <span id="imageCounter">1 / 1</span>
-                    <span id="imageName">图片名称</span>
+                    <span id="imageCounter" aria-live="polite">1 / 1</span>
+                    <span id="imageName" aria-label="当前图片名称">图片名称</span>
                 </div>
             </div>
 
             <div class="viewer-content">
-                <button class="nav-btn prev" id="prevBtn" title="上一张 (←)">‹</button>
-                <div class="image-container">
-                    <img id="viewerImage" src="" alt="预览图片">
+                <button class="nav-btn prev" id="prevBtn" title="上一张 (←)" aria-label="上一张图片">‹</button>
+                <div class="image-container" role="region" aria-label="图片预览区">
+                    <img id="viewerImage" src="" alt="预览图片" tabindex="0">
                     <!-- 裁剪覆盖层 -->
                     <div id="cropOverlay" class="crop-overlay" style="display: none;">
                         <div class="crop-box">
@@ -62,17 +62,17 @@
                         <div id="watermarkText" class="watermark-text" contenteditable="true">水印文字</div>
                     </div>
                 </div>
-                <button class="nav-btn next" id="nextBtn" title="下一张 (→)">›</button>
+                <button class="nav-btn next" id="nextBtn" title="下一张 (→)" aria-label="下一张图片">›</button>
 
                 <!-- 图像编辑面板 -->
-                <div class="edit-panel" id="editPanel" style="display: none;">
+                <div class="edit-panel" id="editPanel" style="display: none;" role="dialog" aria-labelledby="editPanelTitle">
                     <div class="edit-header">
-                        <h3>图像编辑</h3>
-                        <button id="closeEditPanel" title="关闭编辑面板">✕</button>
+                        <h3 id="editPanelTitle">图像编辑</h3>
+                        <button id="closeEditPanel" title="关闭编辑面板" aria-label="关闭编辑面板">✕</button>
                     </div>
-                    <div class="edit-content">
-                        <div class="edit-group">
-                            <h4>基础调整</h4>
+                    <div class="edit-content" role="form">
+                        <div class="edit-group" role="group" aria-labelledby="basicAdjustments">
+                            <h4 id="basicAdjustments">基础调整</h4>
                             <div class="slider-control">
                                 <label for="brightness">亮度</label>
                                 <input type="range" id="brightness" min="0" max="200" value="100" class="slider">
@@ -92,8 +92,8 @@
                                 <button class="reset-btn" data-slider="saturation">重置</button>
                             </div>
                         </div>
-                        <div class="edit-group">
-                            <h4>滤镜效果</h4>
+                        <div class="edit-group" role="group" aria-labelledby="filterEffects">
+                            <h4 id="filterEffects">滤镜效果</h4>
                             <div class="filter-options">
                                 <button class="filter-btn" data-filter="none">原图</button>
                                 <button class="filter-btn" data-filter="grayscale">黑白</button>
@@ -103,8 +103,8 @@
                             </div>
                         </div>
                         <!-- 裁剪功能 -->
-                        <div class="edit-group">
-                            <h4>裁剪图片</h4>
+                        <div class="edit-group" role="group" aria-labelledby="cropImage">
+                            <h4 id="cropImage">裁剪图片</h4>
                             <div class="edit-actions">
                                 <button id="startCrop" class="secondary-btn">开始裁剪</button>
                                 <button id="applyCrop" class="primary-btn" style="display: none;">应用裁剪</button>
@@ -112,8 +112,8 @@
                             </div>
                         </div>
                         <!-- 水印功能 -->
-                        <div class="edit-group">
-                            <h4>添加水印</h4>
+                        <div class="edit-group" role="group" aria-labelledby="addWatermark">
+                            <h4 id="addWatermarkTitle">添加水印</h4>
                             <div class="watermark-control">
                                 <input type="text" id="watermarkInput" placeholder="输入水印文字" class="text-input">
                                 <div class="watermark-style">
@@ -162,5 +162,3 @@
     <script src="js/core.js"></script>
 </body>
 </html>
-
-

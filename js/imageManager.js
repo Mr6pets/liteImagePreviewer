@@ -4,7 +4,7 @@ class ImageManager {
         this.images = [];
         this.currentIndex = 0;
     }
-    
+
     handleFileSelect(event) {
         const files = Array.from(event.target.files);
 
@@ -20,7 +20,7 @@ class ImageManager {
 
         this.processFiles(files);
     }
-    
+
     processFiles(files) {
         // 处理文件，累积添加而不是覆盖
         files.forEach((file) => {
@@ -42,11 +42,11 @@ class ImageManager {
                         size: file.size,
                         type: file.type,
                         lastModified: file.lastModified,
-                        filters: { 
-                            brightness: 100, 
-                            contrast: 100, 
-                            saturation: 100, 
-                            filter: 'none' 
+                        filters: {
+                            brightness: 100,
+                            contrast: 100,
+                            saturation: 100,
+                            filter: 'none'
                         }
                     };
 
@@ -60,7 +60,7 @@ class ImageManager {
         // 清空文件输入，允许重复选择相同文件
         this.core.ui.elements.fileInput.value = '';
     }
-    
+
     createImageItem(imageData) {
         const item = document.createElement('div');
         item.className = 'image-item';
@@ -75,8 +75,9 @@ class ImageManager {
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         };
 
+        // 使用data-src属性存储图片URL，稍后通过Intersection Observer加载
         item.innerHTML = `
-            <img src="${imageData.src}" alt="${imageData.name}" loading="lazy">
+            <img data-src="${imageData.src}" alt="${imageData.name}" class="lazy">
             <div class="image-overlay">
                 <div class="image-info-overlay">
                     <div class="name">${imageData.name}</div>
@@ -104,18 +105,46 @@ class ImageManager {
             this.removeImage(currentIndex);
         });
 
-        // 图片加载完成后添加loaded类
-        const imgElement = item.querySelector('img');
-        imgElement.addEventListener('load', () => {
-            imgElement.classList.add('loaded');
-        });
+        // 添加Intersection Observer来懒加载图片
+        this.setupLazyLoad(item);
 
         this.core.ui.elements.imageList.appendChild(item);
     }
-    
+
+    // 设置懒加载
+    setupLazyLoad(item) {
+        const img = item.querySelector('img');
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const lazyImage = entry.target;
+                    lazyImage.src = lazyImage.dataset.src;
+                    lazyImage.classList.remove('lazy');
+
+                    // 图片加载完成后添加loaded类
+                    lazyImage.addEventListener('load', () => {
+                        lazyImage.classList.add('loaded');
+                    });
+
+                    observer.unobserve(lazyImage);
+                }
+            });
+        });
+
+        observer.observe(img);
+    }
+
     // 删除单张图片
     removeImage(index) {
         if (confirm('确定要删除这张图片吗？')) {
+            // 获取要删除的图片
+            const removedImage = this.images[index];
+
+            // 撤销对象URL以释放内存
+            if (removedImage && removedImage.src && removedImage.src.startsWith('blob:')) {
+                URL.revokeObjectURL(removedImage.src);
+            }
+
             // 从数组中移除
             this.images.splice(index, 1);
 
@@ -145,10 +174,17 @@ class ImageManager {
             }
         }
     }
-    
+
     // 清空所有图片
     clearAllImages() {
         if (confirm('确定要清空所有图片吗？')) {
+            // 撤销所有对象URL以释放内存
+            this.images.forEach(image => {
+                if (image.src && image.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(image.src);
+                }
+            });
+
             this.images = [];
             this.currentIndex = 0;
             this.core.ui.elements.imageList.innerHTML = '';
